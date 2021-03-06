@@ -11,9 +11,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        int mynum = 1;
-        String hey="bruh";
 
-        //TODO(help me it does  ot work)
     }
 }
