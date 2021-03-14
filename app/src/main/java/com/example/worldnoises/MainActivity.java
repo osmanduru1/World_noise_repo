@@ -8,22 +8,25 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
     SharedPreferences myprefs;
     String mySharedPrefFileName = "Login_Info";
-    int num = 0;
-    Button enter_button;
-
+    Button Log_in;
+    Button RegisterButton;
+    Button Forgot_password_button;
+    EditText  enter_info;
+    EditText error_message;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        enter_button = findViewById(R.id.enter_button);
+        Log_in = findViewById(R.id.enter_button);
 
-        enter_button.setOnClickListener(new View.OnClickListener() {
+        Log_in.setOnClickListener(new View.OnClickListener() {
             final Intent i = new Intent(getApplicationContext(), explorer.class);
 
             @Override
@@ -32,11 +35,10 @@ public class MainActivity extends AppCompatActivity {
 
 
                 if(myprefs.getInt("IS_LOGGED_IN",0) ==0) {
-                    enter_button.setText("PLEASE LOG IN");
+                    Log_in.setText("PLEASE LOG IN");
                 } else {
-                    enter_button.setText("YOU ARE LOGGED IN");
+                    Log_in.setText("YOU ARE LOGGED IN");
                 }
-                finish();
             }
 
 
@@ -48,5 +50,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    protected void create_new_user(String username, SharedPreferences.Editor editor) {
+        editor.putString("USERNAME", username);
+        editor.commit();
+    }
+    protected void is_user_logged_in(){
 
+    }
 }

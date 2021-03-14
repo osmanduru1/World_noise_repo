@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">World Noises</string>
+    <string name="forgot_password">submit</string>
+    <string name="abort">Back</string>
+    <string name="forgot_password_hint">Enter Email Here:</string>
 </resources>
