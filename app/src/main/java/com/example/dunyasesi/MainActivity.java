@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-// login page
+// this is login page
 public class MainActivity extends AppCompatActivity {
 
     Button loginButton;
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (loginEmailEditText.getText().toString().length() != 0) {
-                    createNewLoggedInUser(loginEmailEditText.getText().toString(), mySharedPref.edit());
+                 //   createNewLoggedInUser(loginEmailEditText.getText().toString(), mySharedPref.edit());
                     final Intent i = new Intent(getApplicationContext(), Explore.class);
                     startActivity(i);
                     finish();
