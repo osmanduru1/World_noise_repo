@@ -11,14 +11,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.dunyasesi.ui.main.ChatItem;
 
+import org.w3c.dom.Text;
+
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.ArrayList;
 
 public class ChatPageAdapter extends
@@ -37,6 +42,7 @@ public class ChatPageAdapter extends
         // for any view that will be set as you render a row
         public TextView messageText;
         public TextView messageSender;
+        public TextView messageId;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -47,6 +53,8 @@ public class ChatPageAdapter extends
 
             messageSender = (TextView) itemView.findViewById(R.id.messageSender);
             messageText = (TextView) itemView.findViewById(R.id.messageText);
+            messageId = (TextView) itemView.findViewById(R.id.messageId);
+
         }
     }
 
@@ -59,13 +67,50 @@ public class ChatPageAdapter extends
 
     @NonNull
     @Override
-    public ChatPageAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
+    public ChatPageAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, final int viewType) {
+        final Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
         // Inflate the custom layout
-        View sentMessageView = viewType == 0 ? inflater.inflate(R.layout.sent_message, parent, false) : inflater.inflate(R.layout.received_message, parent, false);
+        final View sentMessageView = viewType == 0 ? inflater.inflate(R.layout.sent_message, parent, false) : inflater.inflate(R.layout.received_message, parent, false);
 //receivedMessage
+
+
+
+        sentMessageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (viewType==0) {
+                    final LinearLayout deleteMessageButtonContainer = sentMessageView.findViewById(R.id.deleteMessageButtonContainer);
+                    deleteMessageButtonContainer.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+                    Button deleteMessage = (Button) sentMessageView.findViewById(R.id.deleteMessage);
+                    Button cancelDeletion = (Button) sentMessageView.findViewById(R.id.cancelDeletion);
+
+
+                    cancelDeletion.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            deleteMessageButtonContainer.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0));
+                        }
+                    });
+
+                    deleteMessage.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            TextView messageIdView = (TextView) sentMessageView.findViewById(R.id.messageId);
+                            int messagePosition = Integer.valueOf(messageIdView.getText().toString());
+                            messages.remove(messagePosition);
+                            notifyDataSetChanged();
+                        }
+                    });
+                }
+
+                return false;
+            }
+        });
+
+
 
         // Return a new holder instance
         ChatPageAdapter.ViewHolder viewHolder = new ChatPageAdapter.ViewHolder(sentMessageView);
@@ -76,6 +121,7 @@ public class ChatPageAdapter extends
     public void onBindViewHolder(@NonNull ChatPageAdapter.ViewHolder holder, int position) {
       holder.messageText.setText(this.messages.get(position).message);
       holder.messageSender.setText(this.messages.get(position).sender);
+      holder.messageId.setText(position+ "");
     }
 
     @Override
