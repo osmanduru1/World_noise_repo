@@ -1,7 +1,9 @@
 package com.example.dunyasesi;
 
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -31,6 +33,7 @@ public class util {
     private static String loginUrlBackEnd = "https://mohamedmnete.com/login_user.php";
     private static String registerUrlBackEnd = "https://mohamedmnete.com/create_user.php";
     private static String forgotPasswordUrlBackEnd = "https://mohamedmnete.com/forgot_password.php";
+    private static String getUserProfileUrlBackEnd = "https://mohamedmnete.com/select_user.php";
 
 
     private static String default_caption_new_user = "Hello World, I am live right now! Yay!";
@@ -224,6 +227,60 @@ public class util {
         }
     }
 
+    public static class GetUserProfileTask extends AsyncTask<String, Void, String> {
+        String response;
+        String email;
+
+        public GetUserProfileTask (String response, String email) {
+            this.response = response;
+            this.email = email;
+        }
+
+        protected String doInBackground(String... urls) {
+
+            try {
+                BufferedReader reader=null;
+
+                String data = URLEncoder.encode("email_query", "UTF-8")
+                        + "=" + URLEncoder.encode(email, "UTF-8");
+
+                data += "&" + URLEncoder.encode("app_name", "UTF-8") + "="
+                        + URLEncoder.encode(app_name, "UTF-8");
+
+                URL url = new URL(getUserProfileUrlBackEnd);
+
+                URLConnection conn = url.openConnection();
+                conn.setDoOutput(true);
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                wr.write( data );
+                wr.flush();
+
+                // Get the server response
+
+                reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                String line = null;
+
+                // Read Server Response
+                while((line = reader.readLine()) != null)
+                {
+                    // Append server response in string
+                    response += line;
+                }
+
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+
+            return response;
+        }
+
+        protected void onPostExecute(String result) {
+            response = result;
+        }
+    }
+
     static boolean isNetworkAvailable(ConnectivityManager connectivityManager) {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
@@ -232,6 +289,11 @@ public class util {
     static boolean isValidEmail(String email) {
         String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return email.matches(regex);
+    }
+
+    public static String getEmailFromSharePreferences (Activity activity) {
+        SharedPreferences sharedPref = activity.getSharedPreferences("LOGIN_INFO", Context.MODE_PRIVATE);
+        return sharedPref.getString("USERNAME","mmnete@trinity.edu");
     }
 
 
