@@ -7,10 +7,8 @@
     <TextView
         android:id="@+id/messageId"
         android:layout_height="0dp"
-        android:layout_width="0dp"
-        tools:ignore="Suspicious0dp">
-
-    </TextView>
+        tools:ignore="Suspicious0dp"
+        android:layout_width="0dp" />
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -35,15 +33,15 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="Sender"
-                android:textColor="#FFFFFF"
-                android:textSize="7dp" />
+                android:textColor="#000000"
+                android:textSize="13dp" />
 
             <TextView
                 android:id="@+id/messageText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:autoSizeTextType="uniform"
-                android:textColor="#FFFFFF"
+                android:textColor="#000"
                 android:text="Example message..."/>
 
         </LinearLayout>

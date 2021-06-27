@@ -20,10 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.dunyasesi.ui.main.ChatItem;
 
-import org.w3c.dom.Text;
-
 import java.io.InputStream;
-import java.time.Duration;
 import java.util.ArrayList;
 
 public class ChatPageAdapter extends
@@ -40,9 +37,12 @@ public class ChatPageAdapter extends
     public class ViewHolder extends RecyclerView.ViewHolder {
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
+        public TextView messageId;
         public TextView messageText;
         public TextView messageSender;
-        public TextView messageId;
+
+        public Button cancelDeletionButton;
+        public Button deleteMessageButton;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -54,7 +54,6 @@ public class ChatPageAdapter extends
             messageSender = (TextView) itemView.findViewById(R.id.messageSender);
             messageText = (TextView) itemView.findViewById(R.id.messageText);
             messageId = (TextView) itemView.findViewById(R.id.messageId);
-
         }
     }
 
@@ -68,40 +67,43 @@ public class ChatPageAdapter extends
     @NonNull
     @Override
     public ChatPageAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, final int viewType) {
-        final Context context = parent.getContext();
+        Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
         // Inflate the custom layout
         final View sentMessageView = viewType == 0 ? inflater.inflate(R.layout.sent_message, parent, false) : inflater.inflate(R.layout.received_message, parent, false);
 //receivedMessage
 
-
-
         sentMessageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if (viewType==0) {
-                    final LinearLayout deleteMessageButtonContainer = sentMessageView.findViewById(R.id.deleteMessageButtonContainer);
+
+                if (viewType == 0) {
+
+                    final LinearLayout deleteMessageButtonContainer =
+                            (LinearLayout) sentMessageView.findViewById(R.id.deleteMessageButtonContainer);
                     deleteMessageButtonContainer.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
-                    Button deleteMessage = (Button) sentMessageView.findViewById(R.id.deleteMessage);
+                    //when cancel deletion b is clicked
                     Button cancelDeletion = (Button) sentMessageView.findViewById(R.id.cancelDeletion);
-
+                    Button deleteMessageButton = (Button) sentMessageView.findViewById(R.id.deleteMessage);
 
                     cancelDeletion.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(View view) {
+                        public void onClick(View v) {
                             deleteMessageButtonContainer.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0));
+
                         }
                     });
 
-                    deleteMessage.setOnClickListener(new View.OnClickListener() {
+                    deleteMessageButton.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(View view) {
-                            TextView messageIdView = (TextView) sentMessageView.findViewById(R.id.messageId);
-                            int messagePosition = Integer.valueOf(messageIdView.getText().toString());
+                        public void onClick(View v) {
+                            TextView messaageIdView = (TextView) sentMessageView.findViewById(R.id.messageId);
+                            int messagePosition = Integer.valueOf(messaageIdView.getText().toString());
                             messages.remove(messagePosition);
                             notifyDataSetChanged();
+
                         }
                     });
                 }
@@ -109,7 +111,6 @@ public class ChatPageAdapter extends
                 return false;
             }
         });
-
 
 
         // Return a new holder instance
@@ -121,7 +122,8 @@ public class ChatPageAdapter extends
     public void onBindViewHolder(@NonNull ChatPageAdapter.ViewHolder holder, int position) {
       holder.messageText.setText(this.messages.get(position).message);
       holder.messageSender.setText(this.messages.get(position).sender);
-      holder.messageId.setText(position+ "");
+      holder.messageId.setText(position + "");
+
     }
 
     @Override

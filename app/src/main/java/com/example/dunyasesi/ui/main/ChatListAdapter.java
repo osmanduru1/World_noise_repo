@@ -13,13 +13,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
-import com.example.dunyasesi.R;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.dunyasesi.ChatPage;
+import com.example.dunyasesi.R;
 
 import java.io.InputStream;
 import java.security.AccessController;

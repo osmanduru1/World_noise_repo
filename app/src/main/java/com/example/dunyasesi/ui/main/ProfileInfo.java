@@ -1,6 +1,5 @@
 package com.example.dunyasesi.ui.main;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -12,8 +11,8 @@ import java.util.Map;
  * */
 public class ProfileInfo {
 
-    String username;
-    String caption;
+    public String username;
+    public String caption;
     String profileImageUrl;
 
     public ProfileInfo (String username, String caption, String profileImageUrl) {
@@ -38,4 +37,3 @@ public class ProfileInfo {
         }
     }
 }
-
