@@ -27,6 +27,14 @@ public class ViewProfile extends AppCompatActivity {
     TextView caption;
     ImageView profileImage;
     Button backButton;
+    Button sendMessageButton;
+    Button addFriendButton;
+    Button removeFriendButton;
+    Button removeFriendRequestButton;
+    Button acceptFriendRequestButton;
+    Button rejectFriendRequestButton;
+
+    private int profileId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +45,12 @@ public class ViewProfile extends AppCompatActivity {
         username = findViewById(R.id.viewProfileUsername);
         caption = findViewById(R.id.viewProfileCaption);
         backButton = findViewById(R.id.backButton);
+        sendMessageButton = findViewById(R.id.chatMessageButton);
+        addFriendButton = findViewById(R.id.addFriendButton);
+        removeFriendButton = findViewById(R.id.removeFriendButton);
+        removeFriendRequestButton = findViewById(R.id.removeFriendRequestButton);
+        acceptFriendRequestButton = findViewById(R.id.acceptFriendRequestButton);
+        rejectFriendRequestButton = findViewById(R.id.rejectFriendRequestButton);
 
         String profileEmail = "";
         Intent intent = getIntent();
@@ -47,9 +61,20 @@ public class ViewProfile extends AppCompatActivity {
             if (extras.containsKey("profileEmail")) {
                 profileEmail = getIntent().getExtras().getString("profileEmail");
             }
+            if (extras.containsKey("profileId")) {
+                profileId = getIntent().getExtras().getInt("profileId");
+            }
         }
 
         loadUserProfile(username, caption, profileImage, profileEmail);
+
+        canAddFriend(util.getUserIdFromSharePreferences(this));
+
+        canRemoveFriend(util.getUserIdFromSharePreferences(this));
+
+        canRemoveFriendRequest(util.getUserIdFromSharePreferences(this));
+
+        canRejectFriendRequest(util.getUserIdFromSharePreferences(this));
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,7 +109,6 @@ public class ViewProfile extends AppCompatActivity {
 
         }
 
-
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
@@ -108,5 +132,237 @@ public class ViewProfile extends AppCompatActivity {
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
         }
+    }
+
+
+    private void canAddFriend(String myId) {
+        addFriendButton.setEnabled(false);
+        addFriendButton.setVisibility(View.INVISIBLE);
+
+        String response = "";
+
+        new util.GetFriendshipStatusTask(response, myId, String.valueOf(profileId)) {
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                if(result.equals("NONE")) {
+                    addFriendButton.setEnabled(true);
+                    addFriendButton.setVisibility(View.VISIBLE);
+
+                    addFriendButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            sendFriendRequest(myId);
+                        }
+                    });
+
+                    sendMessageButton.setEnabled(false);
+                    sendMessageButton.setVisibility(View.INVISIBLE);
+                } else if (result.equals("REQUESTED")) {
+                    sendMessageButton.setEnabled(false);
+                    sendMessageButton.setVisibility(View.INVISIBLE);
+                }
+            }
+        }.execute();
+    }
+
+    private void sendFriendRequest(String myId) {
+        addFriendButton.setEnabled(false);
+
+        String response = "";
+
+        new util.AddFriendTask(response, myId, String.valueOf(profileId)) {
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                if(result.equals("SENT")) {
+                    removeFriendRequestButton.setEnabled(true);
+                    removeFriendRequestButton.setVisibility(View.VISIBLE);
+                    addFriendButton.setEnabled(false);
+                    addFriendButton.setVisibility(View.INVISIBLE);
+                    removeFriendRequestButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            removeFriendRequest(myId);
+                        }
+                    });
+                }
+                addFriendButton.setEnabled(true);
+            }
+        }.execute();
+    }
+
+    private void canRemoveFriend(String myId) {
+        removeFriendButton.setEnabled(true);
+        removeFriendButton.setVisibility(View.VISIBLE);
+
+        String response = "";
+
+        new util.GetFriendshipStatusTask(response, myId, String.valueOf(profileId)) {
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                if(result.equals("NONE") || result.equals("REQUESTED")) {
+                    removeFriendButton.setEnabled(false);
+                    removeFriendButton.setVisibility(View.INVISIBLE);
+                } else {
+                    removeFriendButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            removeFriendRequest(myId);
+                        }
+                    });
+                }
+            }
+        }.execute();
+    }
+
+    private void canRemoveFriendRequest(String myId) {
+        removeFriendRequestButton.setEnabled(false);
+        removeFriendRequestButton.setVisibility(View.INVISIBLE);
+
+        String response = "";
+
+        new util.GetSentFriendRequestTask(response, myId, String.valueOf(profileId)) {
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                if(result.equals("REQUESTED")) {
+                    removeFriendRequestButton.setEnabled(true);
+                    removeFriendRequestButton.setVisibility(View.VISIBLE);
+                    removeFriendRequestButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            removeFriendRequest(myId);
+                        }
+                    });
+                }
+            }
+        }.execute();
+    }
+
+    private void removeFriendRequest(String myId) {
+        removeFriendRequestButton.setEnabled(false);
+
+        String response = "";
+
+        new util.RemoveFriendTask(response, myId, String.valueOf(profileId)) {
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                if(result.equals("DELETED")) {
+                    removeFriendRequestButton.setVisibility(View.INVISIBLE);
+                    removeFriendButton.setVisibility(View.INVISIBLE);
+                    sendMessageButton.setVisibility(View.INVISIBLE);
+                    addFriendButton.setEnabled(true);
+                    addFriendButton.setVisibility(View.VISIBLE);
+
+                    addFriendButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            sendFriendRequest(myId);
+                        }
+                    });
+
+                    new util.ClearChatTask(response, myId, String.valueOf(profileId));
+                }
+                removeFriendRequestButton.setEnabled(true);
+            }
+        }.execute();
+    }
+
+    private void canRejectFriendRequest(String myId) {
+        rejectFriendRequestButton.setEnabled(false);
+        rejectFriendRequestButton.setVisibility(View.INVISIBLE);
+        acceptFriendRequestButton.setEnabled(false);
+        acceptFriendRequestButton.setVisibility(View.INVISIBLE);
+
+        String response = "";
+
+        new util.GetRecievedFriendRequestTask(response, myId, String.valueOf(profileId)) {
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                if(result.equals("REQUESTED")) {
+                    rejectFriendRequestButton.setEnabled(true);
+                    rejectFriendRequestButton.setVisibility(View.VISIBLE);
+                    acceptFriendRequestButton.setEnabled(true);
+                    acceptFriendRequestButton.setVisibility(View.VISIBLE);
+
+                    rejectFriendRequestButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            rejectFriendRequest(myId);
+                        }
+                    });
+
+                    acceptFriendRequestButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            acceptFriendRequest(myId);
+                        }
+                    });
+                }
+            }
+        }.execute();
+    }
+
+    private void rejectFriendRequest(String myId) {
+        rejectFriendRequestButton.setEnabled(false);
+        acceptFriendRequestButton.setEnabled(false);
+
+        String response = "";
+
+        new util.RemoveFriendTask(response, myId, String.valueOf(profileId)) {
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                if(result.equals("DELETED")) {
+                    rejectFriendRequestButton.setVisibility(View.INVISIBLE);
+                    acceptFriendRequestButton.setVisibility(View.INVISIBLE);
+                    addFriendButton.setEnabled(true);
+                    addFriendButton.setVisibility(View.VISIBLE);
+
+                    addFriendButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            sendFriendRequest(myId);
+                        }
+                    });
+                }
+                rejectFriendRequestButton.setEnabled(true);
+                acceptFriendRequestButton.setEnabled(true);
+            }
+        }.execute();
+    }
+
+
+    private void acceptFriendRequest(String myId) {
+        rejectFriendRequestButton.setEnabled(false);
+        acceptFriendRequestButton.setEnabled(false);
+
+        String response = "";
+
+        new util.AcceptFriendRequestTask(response, myId, String.valueOf(profileId)) {
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                if(result.equals("FRIENDS")) {
+                    rejectFriendRequestButton.setVisibility(View.INVISIBLE);
+                    acceptFriendRequestButton.setVisibility(View.INVISIBLE);
+
+                    removeFriendButton.setEnabled(true);
+                    removeFriendButton.setVisibility(View.VISIBLE);
+                    removeFriendButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            removeFriendRequest(myId);
+                        }
+                    });
+                }
+                rejectFriendRequestButton.setEnabled(true);
+                acceptFriendRequestButton.setEnabled(true);
+            }
+        }.execute();
     }
 }
