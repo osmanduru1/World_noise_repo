@@ -4,18 +4,36 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
-    
-    <TextView
-         android:id="@+id/messageId"
-         android:layout_height="0dp"
-         android:layout_width="0dp"
-        tools:ignore="Suspicious0dp">
 
-    </TextView>
+    <TextView
+    android:id="@+id/messageId"
+    android:layout_height="0dp"
+    tools:ignore="Suspicious0dp"
+    android:layout_width="0dp"></TextView>
+
+    <TextView
+        android:id="@+id/senderId"
+        android:layout_height="0dp"
+        tools:ignore="Suspicious0dp"
+        android:layout_width="0dp"></TextView>
+
+    <TextView
+        android:id="@+id/recieverId"
+        android:layout_height="0dp"
+        tools:ignore="Suspicious0dp"
+        android:layout_width="0dp"></TextView>
+
+    <TextView
+        android:id="@+id/messageTimeStamp"
+        android:layout_height="0dp"
+        tools:ignore="Suspicious0dp"
+        android:layout_width="0dp"></TextView>
+
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -40,7 +58,8 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:text="Sender"
-                    android:textSize="7dp" />
+                    android:textColor="#000000"
+                    android:textSize="14dp" />
 
                 <TextView
                     android:id="@+id/messageText"
@@ -53,8 +72,6 @@
         </RelativeLayout>
 
     </RelativeLayout>
-
-
 
     <LinearLayout
         android:id="@+id/deleteMessageButtonContainer"
@@ -75,9 +92,11 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Delete Message"
-            android:background="#FF0000"
-            android:textColor="#ffff"/>
+            android:background="#d3d3d3"
+            android:textColor="#FF0000"/>
 
     </LinearLayout>
+
+
 
 </LinearLayout>
